@@ -1,0 +1,37 @@
+- name: Créer VM sur Proxmox
+  hosts: proxmox
+  become: yes
+  gather_facts: no
+  vars_files:
+    - inventories/dev/vars/main.yml
+
+  tasks:
+    - name: Créer VM
+      community.general.proxmox_kvm:
+        api_host: "{{ proxmox_api_url }}"
+        api_user: "{{ proxmox_api_user }}"
+        api_password: "{{ proxmox_api_password }}"
+        node: "{{ node }}"
+        vmid: 300
+        name: "VM-Ansible"
+        memory: 512
+        cores: 2
+        sockets: 1
+        ide:
+          ide2: "local:iso/lubuntu-16.04.6-desktop-amd64.iso,media=cdrom"
+        scsihw: virtio-scsi-pci
+        scsi:
+          scsi0: "local-lvm:10"
+        net:
+          net0: "virtio,bridge=vmbr0"
+        state: present
+
+
+
+    - name: Lancer VM
+      community.general.proxmox_kvm:
+        api_host: "{{ proxmox_api_url }}"
+        api_user: "{{ proxmox_api_user }}"
+        api_password: "{{ proxmox_api_password }}"
+        node: "{{ node }}"
+        vmid: 300
